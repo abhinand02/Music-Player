@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:music_player/Model/model.dart';
 import 'package:music_player/Playlist/songs_by_playlist.dart';
-import 'package:music_player/Splash%20Screen/splashscreen.dart';
 import 'package:music_player/widgets/method.dart';
 import '../Model/db_functions.dart';
 import '../Model/playlistmodel.dart';

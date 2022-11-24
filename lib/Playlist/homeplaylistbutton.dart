@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:music_player/constants/style.dart';
-import 'package:music_player/main.dart';
 import '../Model/db_functions.dart';
 import '../Model/model.dart';
 import '../Model/playlistmodel.dart';
-import '../Splash Screen/splashscreen.dart';
+
 
 bool textformVisibility = false;
 

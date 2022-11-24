@@ -9,7 +9,7 @@ class About extends StatelessWidget {
     return Theme(
       data: ThemeData.dark(), child: const LicensePage(
           applicationName: 'Musik',
-          applicationVersion: '1.1',
+          applicationVersion: '1.4',
           applicationIcon:
                Image(image: AssetImage('assets/images/music.png'),),
               applicationLegalese: 'Developed By \nABHINAND MADHU',

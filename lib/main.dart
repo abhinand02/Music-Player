@@ -7,7 +7,9 @@ import 'package:music_player/Model/mostplayed_model.dart';
 import 'package:music_player/Model/playlistmodel.dart';
 import 'package:music_player/Model/recentsong_model.dart';
 import 'package:music_player/constants/style.dart';
+import 'package:music_player/widgets/method.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'Splash Screen/splashscreen.dart';
 
 Future<void> main() async {
@@ -33,7 +35,9 @@ Future<void> main() async {
       providers: [ChangeNotifierProvider(create: (_) => ThemeProvider())],
       child: const MyApp()));
 }
-  bool isDarkMode = true;
+
+bool isDarkMode = true;
+
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
@@ -43,81 +47,71 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   @override
+  void initState() {
+    sharedPreferece(context).then((response) {
+      setState(() {
+        isDarkMode = response;
+      });
+    });
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      theme: isDarkMode? Provider.of<ThemeProvider>(context).currentTheme ?? ThemeData(
-      fontFamily: 'Urbanist',
-      appBarTheme: AppBarTheme(
-        titleTextStyle: TextStyle(color: whiteClr),
-        iconTheme: IconThemeData(color: whiteClr),
-          backgroundColor: backGroundColor,
-          toolbarTextStyle: TextStyle(color: whiteClr)),
-      textTheme: Theme.of(context).textTheme.apply(bodyColor: whiteClr),
-      sliderTheme: const SliderThemeData(trackHeight: 2),
-      listTileTheme: ListTileThemeData(
-        iconColor: whiteClr,
-      ),
-      scaffoldBackgroundColor: backGroundColor,
-      iconTheme: IconThemeData(color: whiteClr),
-    ): Provider.of<ThemeProvider>(context).currentTheme ?? ThemeData(
-      scaffoldBackgroundColor: whiteClr,
-      iconTheme: IconThemeData(color: blackClr),
-      listTileTheme: ListTileThemeData(
-        iconColor: blackClr,
-      ),
-      appBarTheme: AppBarTheme(
-          backgroundColor: whiteClr,
-          iconTheme: IconThemeData(color: blackClr),
-          titleTextStyle: TextStyle(color: blackClr),
-          toolbarTextStyle: TextStyle(color: blackClr),),
-      textTheme: Theme.of(context).textTheme.apply(bodyColor: blackClr,),
-      sliderTheme: const SliderThemeData(trackHeight: 2),
-      fontFamily: 'Urbanist',
-    ),
+      theme: isDarkMode
+          ? Provider.of<ThemeProvider>(context).currentTheme ??
+              ThemeData(
+                fontFamily: 'Urbanist',
+                appBarTheme: AppBarTheme(
+                    titleTextStyle: TextStyle(color: whiteClr),
+                    iconTheme: IconThemeData(color: whiteClr),
+                    backgroundColor: backGroundColor,
+                    toolbarTextStyle: TextStyle(color: whiteClr)),
+                textTheme:
+                    Theme.of(context).textTheme.apply(bodyColor: whiteClr),
+                sliderTheme: const SliderThemeData(trackHeight: 2),
+                listTileTheme: ListTileThemeData(
+                  iconColor: whiteClr,
+                ),
+                scaffoldBackgroundColor: backGroundColor,
+                iconTheme: IconThemeData(color: whiteClr),
+              )
+          : ThemeData(
+              scaffoldBackgroundColor: whiteClr,
+              iconTheme: IconThemeData(color: blackClr),
+              listTileTheme: ListTileThemeData(
+                iconColor: blackClr,
+              ),
+              appBarTheme: AppBarTheme(
+                backgroundColor: whiteClr,
+                iconTheme: IconThemeData(color: blackClr),
+                titleTextStyle: TextStyle(color: blackClr),
+                toolbarTextStyle: TextStyle(color: blackClr),
+              ),
+              textTheme: Theme.of(context).textTheme.apply(
+                    bodyColor: blackClr,
+                  ),
+              sliderTheme: const SliderThemeData(trackHeight: 2),
+              fontFamily: 'Urbanist',
+            ),
       home: const SplashScreen(),
     );
   }
 }
 
-class ThemeProvider extends ChangeNotifier {
-  ThemeData? currentTheme;
-
-  setDarkMode(BuildContext context) {
-    currentTheme =  ThemeData(
-      fontFamily: 'Urbanist',
-      appBarTheme: AppBarTheme(
-        titleTextStyle: TextStyle(color: whiteClr),
-        iconTheme: IconThemeData(color: whiteClr),
-          backgroundColor: backGroundColor,
-          toolbarTextStyle: TextStyle(color: whiteClr)),
-      textTheme: Theme.of(context).textTheme.apply(bodyColor: whiteClr,),
-      sliderTheme: const SliderThemeData(trackHeight: 2),
-      listTileTheme: ListTileThemeData(
-        iconColor: whiteClr,
-      ),
-      scaffoldBackgroundColor: backGroundColor,
-      iconTheme: IconThemeData(color: whiteClr),
-    );
-    notifyListeners();
-  }
-
-  setLightMode(BuildContext context) {
-    currentTheme = ThemeData(
-      scaffoldBackgroundColor: whiteClr,
-      iconTheme: IconThemeData(color: blackClr),
-      listTileTheme: ListTileThemeData(
-        iconColor: blackClr,
-      ),
-      appBarTheme: AppBarTheme(
-          backgroundColor: whiteClr,
-          iconTheme: IconThemeData(color: blackClr),
-          titleTextStyle: TextStyle(color: blackClr),
-          toolbarTextStyle: TextStyle(color: blackClr),),
-      textTheme: Theme.of(context).textTheme.apply(bodyColor: blackClr,),
-      sliderTheme: const SliderThemeData(trackHeight: 2),
-      fontFamily: 'Urbanist',
-    );
-    notifyListeners();
+sharedPreferece(context) async {
+  final sharedPreference = await SharedPreferences.getInstance();
+  final value = sharedPreference.getBool('theme');
+  if (value == true) {
+    isDarkMode = true;
+    return true;
+  } else if (value == null) {
+    isDarkMode = true;
+    return true;
+  } else {
+    isDarkMode = false;
+    return false;
   }
 }

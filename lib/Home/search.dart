@@ -7,7 +7,7 @@ import 'package:on_audio_query/on_audio_query.dart';
 import '../Model/db_functions.dart';
 import '../Model/mostplayed_model.dart';
 import '../Model/recentsong_model.dart';
-import '../settings/settings.dart';
+import '../Splash Screen/splashscreen.dart';
 
 class Search extends SearchDelegate {
 @override
@@ -67,7 +67,7 @@ class Search extends SearchDelegate {
 
 Widget searchResults(List<Songs> song) {
   final dbsongs = SongBox.getInstance().values.toList();
-  AssetsAudioPlayer _audioPlayer = AssetsAudioPlayer.withId('0');
+  AssetsAudioPlayer audioPlayer = AssetsAudioPlayer.withId('0');
   List<Audio> audio = [];
   for (var item in song) {
     audio.add(
@@ -79,7 +79,7 @@ Widget searchResults(List<Songs> song) {
     );
   }
   return ListView.builder(
-    physics: const NeverScrollableScrollPhysics(),
+    physics: const BouncingScrollPhysics(),
     itemBuilder: (context, index) {
       if (song.isEmpty) {
         return Scaffold(
@@ -92,11 +92,9 @@ Widget searchResults(List<Songs> song) {
         );
       } else {
         return ListTile(
-          onTap: () {
+          onTap: () async {
             FocusScopeNode currentFocus = FocusScope.of(context);
-            if (!currentFocus.hasPrimaryFocus) {
               currentFocus.unfocus();
-            }
             final rsongs = RecentPlayed(
                 songname: song[index].songname,
                 artist: song[index].artist,
@@ -104,16 +102,17 @@ Widget searchResults(List<Songs> song) {
                 songurl: song[index].songurl,
                 id: song[index].id);
             updateRecentlyPlayed(rsongs);
-            int songIndex = song.indexWhere(
-                (element) => element.songname == dbsongs[index].songname);
+            int songIndex = dbsongs.indexWhere(
+                (element) => element.songname == song[index].songname);
             MostPlayed msongs = mostplayedsongs.values.toList()[songIndex];
             updatePlayedSongCount(msongs, index);
 
-            _audioPlayer.open(
+          await  audioPlayer.open(
               Playlist(audios: audio, startIndex: index),
               showNotification: notificationSwitch,
               loopMode: LoopMode.playlist,
             );
+            // ignore: use_build_context_synchronously
             Navigator.of(context).pushReplacement(
               MaterialPageRoute(
                 builder: (context) => const NowPlayingScreen(),

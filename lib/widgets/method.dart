@@ -31,3 +31,45 @@ sleeptime(int picktime) {
 popFunction() {
   SystemNavigator.pop();
 }
+
+class ThemeProvider extends ChangeNotifier {
+  ThemeData? currentTheme;
+
+  setDarkMode(BuildContext context) {
+    currentTheme =  ThemeData(
+      fontFamily: 'Urbanist',
+      appBarTheme: AppBarTheme(
+        titleTextStyle: TextStyle(color: whiteClr),
+        iconTheme: IconThemeData(color: whiteClr),
+          backgroundColor: backGroundColor,
+          toolbarTextStyle: TextStyle(color: whiteClr)),
+      textTheme: Theme.of(context).textTheme.apply(bodyColor: whiteClr,),
+      sliderTheme: const SliderThemeData(trackHeight: 2),
+      listTileTheme: ListTileThemeData(
+        iconColor: whiteClr,
+      ),
+      scaffoldBackgroundColor: backGroundColor,
+      iconTheme: IconThemeData(color: whiteClr),
+    );
+    notifyListeners();
+  }
+
+  setLightMode(BuildContext context) {
+    currentTheme = ThemeData(
+      scaffoldBackgroundColor: whiteClr,
+      iconTheme: IconThemeData(color: blackClr),
+      listTileTheme: ListTileThemeData(
+        iconColor: blackClr,
+      ),
+      appBarTheme: AppBarTheme(
+          backgroundColor: whiteClr,
+          iconTheme: IconThemeData(color: blackClr),
+          titleTextStyle: TextStyle(color: blackClr),
+          toolbarTextStyle: TextStyle(color: blackClr),),
+      textTheme: Theme.of(context).textTheme.apply(bodyColor: blackClr,),
+      sliderTheme: const SliderThemeData(trackHeight: 2),
+      fontFamily: 'Urbanist',
+    );
+    notifyListeners();
+  }
+}

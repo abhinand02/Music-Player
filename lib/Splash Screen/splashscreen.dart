@@ -6,9 +6,11 @@ import 'package:music_player/Model/model.dart';
 import 'package:music_player/Model/mostplayed_model.dart';
 import 'package:music_player/widgets/bottom_navbar.dart';
 import 'package:on_audio_query/on_audio_query.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../Home/artist_screen.dart';
 
 late bool status;
+late bool notificationSwitch;
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -27,7 +29,7 @@ List<Audio> songsList = [];
 class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
-    // sharedPreferece();
+    sharedPreferece();
     requestStoragePremission();
     getArtist();
     super.initState();
@@ -96,3 +98,15 @@ class _SplashScreenState extends State<SplashScreen> {
     );
   }
 }
+  void sharedPreferece() async{
+    final sharedPreference  = await SharedPreferences.getInstance();
+    final value =  sharedPreference.getBool('notification');
+    if(value==true){
+      notificationSwitch = true;
+    }else if(value==null){
+        notificationSwitch = true;
+    }
+    else{
+      notificationSwitch = false;
+    }
+  }

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
-import 'package:music_player/Splash%20Screen/splashscreen.dart';
 import 'package:music_player/constants/style.dart';
 import 'package:music_player/main.dart';
 

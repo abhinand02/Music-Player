@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:music_player/main.dart';
-
-import '../Splash Screen/splashscreen.dart';
 import '../constants/style.dart';
 
 class TermsAndCondition extends StatelessWidget {

@@ -11,10 +11,10 @@ import 'package:music_player/Model/recentsong_model.dart';
 import 'package:music_player/constants/style.dart';
 import 'package:music_player/NowPlaying%20Screen/nowplaying.dart';
 import 'package:music_player/main.dart';
-import 'package:music_player/settings/settings.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../Favourite/favourite_function.dart';
+import '../Splash Screen/splashscreen.dart';
 import '../widgets/mini_player.dart';
 import 'artist_screen.dart';
 

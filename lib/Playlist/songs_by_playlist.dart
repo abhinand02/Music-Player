@@ -11,7 +11,7 @@ import 'package:music_player/widgets/mini_player.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 import '../Model/model.dart';
 import '../constants/style.dart';
-import '../settings/settings.dart';
+import '../Splash Screen/splashscreen.dart';
 
 List<Songs>? songs = [];
 class SongsByPlaylistScreen extends StatefulWidget {

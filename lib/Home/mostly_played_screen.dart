@@ -9,7 +9,7 @@ import 'package:on_audio_query/on_audio_query.dart';
 import '../Model/db_functions.dart';
 import '../Model/mostplayed_model.dart';
 import '../constants/style.dart';
-import '../settings/settings.dart';
+import '../Splash Screen/splashscreen.dart';
 import '../widgets/mini_player.dart';
 
 class MostlyPlayedScreen extends StatefulWidget {

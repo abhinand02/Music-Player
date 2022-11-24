@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:music_player/constants/style.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 import '../NowPlaying Screen/nowplaying.dart';
-import '../settings/settings.dart';
+import '../Splash Screen/splashscreen.dart';
 import '../widgets/mini_player.dart';
 import 'home_screen.dart';
 

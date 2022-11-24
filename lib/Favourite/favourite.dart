@@ -11,7 +11,7 @@ import '../Home/home_screen.dart';
 import '../Model/favmodel.dart';
 import '../Model/mostplayed_model.dart';
 import '../Model/recentsong_model.dart';
-import '../settings/settings.dart';
+import '../Splash Screen/splashscreen.dart';
 import '../widgets/mini_player.dart';
 
 class FavoriteScreen extends StatefulWidget {

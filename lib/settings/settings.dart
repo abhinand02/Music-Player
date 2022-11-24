@@ -8,8 +8,8 @@ import 'package:music_player/widgets/method.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../Splash Screen/splashscreen.dart';
 
-bool notificationSwitch = true;
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -44,7 +44,7 @@ class SettingsScreen extends StatelessWidget {
             ],
           ),
          const Text(
-            'Version \n 1.0 ',
+            'Version \n 1.4 ',
             textAlign: TextAlign.center,
             // style: TextStyle(fontSize: 14,),
           ),
@@ -98,6 +98,7 @@ class _NotifictionSwitchState extends State<NotifictionSwitch> {
         trailing: Switch(
           value: notificationSwitch,
           onChanged: (value) {
+            notificationSwitch ? clearData() : saveData();
             setState(() {
               notificationSwitch = value;
             });
@@ -137,13 +138,14 @@ class _SwitchThemeState extends State<SwitchTheme> {
           onChanged: (value) {
             final themeProvider= Provider.of<ThemeProvider>(context,listen: false);
             if(isDarkMode == true){
-              clearData();
+              clearTheme();
             }else{
-              saveData();
+              saveTheme();
             }
             setState(() {
               isDarkMode = value;
-            });
+            },
+            );
             isDarkMode ? themeProvider.setDarkMode(context)
             : themeProvider.setLightMode(context);
           },
@@ -185,14 +187,26 @@ class SettingTileItems extends StatelessWidget {
   }
 }
 share(){
-  Share.share('www.google.com');
+  Share.share('https://play.google.com/store/apps/details?id=in.brototype.musik');
 }
 
 Future<void> saveData() async{
  final sharedpref = await SharedPreferences.getInstance();
- await sharedpref.setBool('isDarkMode', true);
+ await sharedpref.setBool('notification', true);
   }
   Future<void> clearData() async{
  final sharedpref = await SharedPreferences.getInstance();
- await sharedpref.setBool('isDarkMode', false);
+ await sharedpref.setBool('notification', false);
   }
+
+Future<void> saveTheme() async{
+ final sharedpref = await SharedPreferences.getInstance();
+ await sharedpref.setBool('theme', true);
+ print('themesaved');
+  }
+  Future<void> clearTheme() async{
+ final sharedpref = await SharedPreferences.getInstance();
+ await sharedpref.setBool('theme', false);
+ print('theme dlted');
+  }
+  
