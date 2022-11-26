@@ -1,27 +1,23 @@
 import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:music_player/Favourite/favourite_function.dart';
 import 'package:music_player/constants/style.dart';
 import 'package:on_audio_query/on_audio_query.dart';
+import '../Application/NowPlaying/now_playing_bloc.dart';
 import '../Model/model.dart';
-import '../Splash Screen/splashscreen.dart';
 
 bool isRepeat = false;
 bool isShuffle = false;
 
-class NowPlayingScreen extends StatefulWidget {
-  const NowPlayingScreen({
+class NowPlayingScreen extends StatelessWidget {
+  NowPlayingScreen({
     super.key,
   });
-  @override
-  State<NowPlayingScreen> createState() => _NowPlayingScreenState();
-}
-
-class _NowPlayingScreenState extends State<NowPlayingScreen> {
   final AssetsAudioPlayer player = AssetsAudioPlayer.withId('0');
   @override
   Widget build(BuildContext context) {
-    List<Songs> dbSongs = box.values.toList();
+    List<Songs> dbSongs = SongBox.getInstance().values.toList();
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
 
@@ -43,103 +39,113 @@ class _NowPlayingScreenState extends State<NowPlayingScreen> {
     );
   }
 
-  Builder favPlalist(
+  Expanded favPlalist(
     Playing playing,
     List<Songs> dbSongs,
   ) {
-    return Builder(
-      builder: (context) {
-        return Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            IconButton(
-              icon: isShuffle
-                  ? Icon(
-                      Icons.shuffle_rounded,
-                      color: selectedItemColor,
-                    )
-                  : const Icon(Icons.shuffle_rounded),
-              iconSize: 30,
-              color: greyclr,
-              onPressed: () {
-                setState(() {
-                  if (isShuffle == true) {
-                    isShuffle = false;
-                    player.toggleShuffle();
-                  } else {
-                    isShuffle = true;
-                    player.toggleShuffle();
-                  }
-                });
-              },
-              padding: EdgeInsets.zero,
-              splashRadius: 30,
-            ),
-            IconButton(
-              icon: const Icon(Icons.skip_previous_sharp),
-              iconSize: 40,
-              color: greyclr,
-              onPressed: () {
-                player.previous();
-              },
-              padding: EdgeInsets.zero,
-              splashRadius: 30,
-            ),
-            PlayerBuilder.isPlaying(
-                player: player,
-                builder: (context, isPlaying) {
+    return Expanded(
+      child: Builder(
+        builder: (context) {
+          return Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              BlocBuilder<NowPlayingBloc, NowPlayingState>(
+                builder: (context, state) {
                   return IconButton(
-                    icon: Icon(isPlaying
-                        ? Icons.pause_circle_filled_rounded
-                        : Icons.play_circle_filled_outlined),
-                    color: selectedItemColor,
-                    iconSize: 80,
+                    icon: Icon(
+                      Icons.shuffle_rounded,
+                      color: state.shuffle,
+                    ),
+                    iconSize: 30,
+                    color: greyclr,
                     onPressed: () {
-                      player.playOrPause();
+                      // setState(() {
+                      BlocProvider.of<NowPlayingBloc>(context)
+                          .add(const Shuffle());
+                      if (isShuffle == true) {
+                        isShuffle = false;
+                        player.toggleShuffle();
+                      } else {
+                        isShuffle = true;
+                        player.toggleShuffle();
+                      }
+                      // });
                     },
                     padding: EdgeInsets.zero,
-                    splashRadius: 40,
+                    splashRadius: 30,
                   );
-                }),
-            IconButton(
-              icon: const Icon(Icons.skip_next_sharp),
-              color: greyclr,
-              iconSize: 40,
-              onPressed: playing.index == (dbSongs.length - 1)
-                  ? () {}
-                  : () {
-                      player.next();
-                      // print('${dbSongs.length} last index ');
-                    },
-              padding: EdgeInsets.zero,
-              splashRadius: 30,
-            ),
-            IconButton(
-              icon: isRepeat == true
-                  ? Icon(
-                      Icons.repeat_one_rounded,
+                },
+              ),
+              IconButton(
+                icon: const Icon(Icons.skip_previous_sharp),
+                iconSize: 40,
+                color: greyclr,
+                onPressed: () {
+                  player.previous();
+                },
+                padding: EdgeInsets.zero,
+                splashRadius: 30,
+              ),
+              PlayerBuilder.isPlaying(
+                  player: player,
+                  builder: (context, isPlaying) {
+                    return IconButton(
+                      icon: Icon(isPlaying
+                          ? Icons.pause_circle_filled_rounded
+                          : Icons.play_circle_filled_outlined),
                       color: selectedItemColor,
-                    )
-                  : const Icon(Icons.repeat_outlined),
-              color: greyclr,
-              iconSize: 30,
-              onPressed: () {
-                setState(() {
-                  if (isRepeat == false) {
-                    isRepeat = true;
-                    player.setLoopMode(LoopMode.single);
-                  } else {
-                    isRepeat = false;
-                    player.setLoopMode(LoopMode.none);
-                  }
-                });
-              },
-              padding: EdgeInsets.zero,
-              splashRadius: 30,
-            ),
-          ],
-        );
-      },
+                      iconSize: 80,
+                      onPressed: () {
+                        player.playOrPause();
+                      },
+                      padding: EdgeInsets.zero,
+                      splashRadius: 40,
+                    );
+                  }),
+              IconButton(
+                icon: const Icon(Icons.skip_next_sharp),
+                color: greyclr,
+                iconSize: 40,
+                onPressed: playing.index == (dbSongs.length - 1)
+                    ? () {}
+                    : () {
+                        player.next();
+                        // print('${dbSongs.length} last index ');
+                      },
+                padding: EdgeInsets.zero,
+                splashRadius: 30,
+              ),
+              BlocBuilder<NowPlayingBloc, NowPlayingState>(
+                builder: (context, state) {
+                  return IconButton(
+                   icon:
+                        Icon(
+                            Icons.repeat_one_rounded,
+                            color: state.repeat,
+                        ),
+                    color: greyclr,
+                    iconSize: 30,
+                    onPressed: () {
+                      // setState(() {
+                        BlocProvider.of<NowPlayingBloc>(context).add(const Repeat());
+                      if (isRepeat == false) {
+                        isRepeat = true;
+                        player.setLoopMode(LoopMode.single);
+                      } else {
+                        isRepeat = false;
+                        player.setLoopMode(LoopMode.none);
+                      }
+                      // });
+                    },
+                    padding: EdgeInsets.zero,
+                    splashRadius: 30,
+                  );
+                },
+              ),
+            ],
+          );
+        },
+      ),
     );
   }
 
@@ -169,19 +175,14 @@ class _NowPlayingScreenState extends State<NowPlayingScreen> {
   }
 }
 
-class SongDetails extends StatefulWidget {
-  const SongDetails({
+class SongDetails extends StatelessWidget {
+  SongDetails({
     Key? key,
     required this.width,
   }) : super(key: key);
 
   final double width;
 
-  @override
-  State<SongDetails> createState() => _SongDetailsState();
-}
-
-class _SongDetailsState extends State<SongDetails> {
   final AssetsAudioPlayer player = AssetsAudioPlayer.withId('0');
 
   @override
@@ -194,8 +195,8 @@ class _SongDetailsState extends State<SongDetails> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 SizedBox(
-                  height: widget.width - 100,
-                  width: widget.width - 100,
+                  height: width - 100,
+                  width: width - 100,
                   child: QueryArtworkWidget(
                     id: int.parse(playing.audio.audio.metas.id!),
                     type: ArtworkType.AUDIO,
@@ -211,14 +212,14 @@ class _SongDetailsState extends State<SongDetails> {
             ),
             height20,
             Text(
-              player.getCurrentAudioTitle,
+              player.getCurrentAudioTitle.split('-').first,
               style: textWhite22,
               overflow: TextOverflow.ellipsis,
               textAlign: TextAlign.center,
             ),
             height10,
             Text(
-              player.getCurrentAudioArtist,
+              player.getCurrentAudioArtist.split('-').first,
               style: textgrey14,
             ),
             player.builderCurrentPosition(
@@ -233,13 +234,8 @@ class _SongDetailsState extends State<SongDetails> {
                       min: 0.0,
                       max: playing.audio.duration.inSeconds.toDouble(),
                       onChanged: (value) {
-                        setState(
-                          () {
-                            Duration newDuration =
-                                Duration(seconds: value.toInt());
-                            player.seek(newDuration);
-                          },
-                        );
+                        Duration newDuration = Duration(seconds: value.toInt());
+                        player.seek(newDuration);
                       },
                     ),
                     Padding(
@@ -262,8 +258,8 @@ class _SongDetailsState extends State<SongDetails> {
                 );
               },
             ),
-            height20,
-            height20,
+            // height20,
+            // height20,
           ],
         );
       },

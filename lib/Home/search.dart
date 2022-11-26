@@ -115,7 +115,7 @@ Widget searchResults(List<Songs> song) {
             // ignore: use_build_context_synchronously
             Navigator.of(context).pushReplacement(
               MaterialPageRoute(
-                builder: (context) => const NowPlayingScreen(),
+                builder: (context) => NowPlayingScreen(),
               ),
             );
           },

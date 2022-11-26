@@ -1,7 +1,6 @@
 import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/adapters.dart';
-import 'package:music_player/Home/home_screen.dart';
 import 'package:music_player/Model/recentsong_model.dart';
 import 'package:music_player/Playlist/homeplaylistbutton.dart';
 import 'package:music_player/NowPlaying%20Screen/nowplaying.dart';
@@ -10,42 +9,14 @@ import '../Model/db_functions.dart';
 import '../Model/mostplayed_model.dart';
 import '../constants/style.dart';
 import '../Splash Screen/splashscreen.dart';
-import '../widgets/mini_player.dart';
+import '../widgets/method.dart';
 
-class MostlyPlayedScreen extends StatefulWidget {
-  const MostlyPlayedScreen({super.key});
+class MostlyPlayedScreen extends StatelessWidget {
+   MostlyPlayedScreen({super.key});
 
-  @override
-  State<MostlyPlayedScreen> createState() => _MostlyPlayedScreenState();
-}
-
-class _MostlyPlayedScreenState extends State<MostlyPlayedScreen> {
   AssetsAudioPlayer audioPlayer = AssetsAudioPlayer.withId('0');
-  List<Audio> songs = [];
   List<RecentPlayed> rsongs = recentlyplayedbox.values.toList();
 
-  @override
-  void initState() {
-    List<MostPlayed> songlist = mostplayedsongs.values.toList();
-    int i = 0;
-    for (var item in songlist) {
-      if (item.count > 5) {
-        finalmpsongs.insert(i, item);
-
-        i = i + 1;
-      }
-    }
-    for (var items in finalmpsongs) {
-      songs.add(Audio.file(items.songurl,
-          metas: Metas(
-              title: items.songname,
-              artist: items.artist,
-              id: items.id.toString())));
-    }
-    super.initState();
-  }
-
-  List<MostPlayed> finalmpsongs = [];
 
   @override
   Widget build(BuildContext context) {
@@ -53,6 +24,7 @@ class _MostlyPlayedScreenState extends State<MostlyPlayedScreen> {
       body: ValueListenableBuilder(
         valueListenable: mostplayedsongs.listenable(),
         builder: (context, Box<MostPlayed> mpsongsbox, _) {
+          mostlyPlayedFunction();
           if (finalmpsongs.isNotEmpty) {
             return ListView.builder(
               physics: const BouncingScrollPhysics(
@@ -68,12 +40,12 @@ class _MostlyPlayedScreenState extends State<MostlyPlayedScreen> {
                       showNotification: notificationSwitch,
                     );
 
-                    setState(() {
-                      playerVisibility=true;
-                      isPlaying = true;
-                    });
+                    // setState(() {
+                    //   playerVisibility=true;
+                    //   isPlaying = true;
+                    // });
                     Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => const NowPlayingScreen()));
+                        builder: (context) => NowPlayingScreen()));
                   },
                   leading: QueryArtworkWidget(
                     artworkBorder: BorderRadius.circular(15),

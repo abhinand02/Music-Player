@@ -1,21 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:hive_flutter/adapters.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:music_player/Model/model.dart';
 import 'package:music_player/Playlist/songs_by_playlist.dart';
 import 'package:music_player/widgets/method.dart';
+import '../Application/Playlist/playlist_bloc.dart';
 import '../Model/db_functions.dart';
 import '../Model/playlistmodel.dart';
 import '../constants/style.dart';
 import '../main.dart';
 
-class PlaylistScreen extends StatefulWidget {
-  const PlaylistScreen({super.key});
+class PlaylistScreen extends StatelessWidget {
+   PlaylistScreen({super.key});
 
-  @override
-  State<PlaylistScreen> createState() => _PlaylistScreenState();
-}
-
-class _PlaylistScreenState extends State<PlaylistScreen> {
   List<PlaylistSongs> playlists = [];
   List<Songs> playlistsong = [];
   final formkey = GlobalKey<FormState>();
@@ -23,171 +19,183 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
 
   @override
   Widget build(BuildContext context) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      BlocProvider.of<PlaylistBloc>(context).add(const GetList());
+    });
     return Scaffold(
       appBar: appBar('Playlists'),
-      body: ValueListenableBuilder<Box<PlaylistSongs>>(
-        valueListenable: playlistbox.listenable(),
-        builder: (context, Box<PlaylistSongs> value, child) {
-          playlists = value.values.toList();
-          return Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              value.isEmpty
-                  ? Center(
-                      child: Text(
-                        'No Playlist!',
-                        style: textWhite18,
-                      ),
-                    )
-                  : Flexible(
-                      child: ListView.builder(
-                        physics: const BouncingScrollPhysics(),
-                        itemBuilder: (context, index) {
-                          playlistsong = playlists[index].playlistsongs!;
-                          TextEditingController textController =
-                              TextEditingController(
-                                  text: playlists[index].playlistname);
-                          return ListTile(
-                            onTap: () {
-                              Navigator.push(context,
-                                  MaterialPageRoute(builder: (context) {
-                                return SongsByPlaylistScreen(
-                                  playlistname: playlists[index].playlistname,
-                                  playlistindex: index,
-                                  allPlaylistSongs:
-                                      playlists[index].playlistsongs!,
-                                );
-                              }));
-                            },
-                            leading: Icon(
-                              Icons.headphones_rounded,
-                              color: selectedItemColor,
-                              size: 30,
-                            ),
-                            title: Text(
-                              playlists[index].playlistname,
-                              style: textWhite18,
-                            ),
-                            trailing: PopupMenuButton(
-                              color: isDarkMode ? backGroundColor : whiteClr,
-                              icon: const Icon(
-                                Icons.more_vert,
-                              ),
-                              itemBuilder: (_) => <PopupMenuItem<int>>[
-                                PopupMenuItem(
-                                  value: 0,
-                                  child: SizedBox(
-                                    width: 80,
-                                    child: Text(
-                                      'Rename',
-                                      style: text18,
-                                    ),
-                                  ),
+      body: BlocBuilder<PlaylistBloc, PlaylistState>(
+        builder: (context, state) {
+          // return ValueListenableBuilder<Box<PlaylistSongs>>(
+          //   valueListenable: playlistbox.listenable(),
+          //   builder: (context, Box<PlaylistSongs> value, child) {
+              playlists = state.playlists.toList();
+              return Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  state.playlists.isEmpty
+                      ? Center(
+                          child: Text(
+                            'No Playlist!',
+                            style: textWhite18,
+                          ),
+                        )
+                      : Flexible(
+                          child: ListView.builder(
+                            physics: const BouncingScrollPhysics(),
+                            itemBuilder: (context, index) {
+                              playlistsong = playlists[index].playlistsongs!;
+                              TextEditingController textController =
+                                  TextEditingController(
+                                      text: playlists[index].playlistname);
+                              return ListTile(
+                                onTap: () {
+                                  Navigator.push(context,
+                                      MaterialPageRoute(builder: (context) {
+                                    return SongsByPlaylistScreen(
+                                      playlistname:
+                                          playlists[index].playlistname,
+                                      playlistindex: index,
+                                      allPlaylistSongs:
+                                          playlists[index].playlistsongs!,
+                                    );
+                                  }));
+                                },
+                                leading: Icon(
+                                  Icons.headphones_rounded,
+                                  color: selectedItemColor,
+                                  size: 30,
                                 ),
-                                PopupMenuItem(
-                                  value: 1,
-                                  child: SizedBox(
-                                    width: 80,
-                                    child: Text(
-                                      'Delete',
-                                      style: text18,
-                                    ),
+                                title: Text(
+                                  playlists[index].playlistname,
+                                  style: textWhite18,
+                                ),
+                                trailing: PopupMenuButton(
+                                  color:
+                                      isDarkMode ? backGroundColor : whiteClr,
+                                  icon: const Icon(
+                                    Icons.more_vert,
                                   ),
-                                )
-                              ],
-                              onSelected: (selectedindex) async {
-                                switch (selectedindex) {
-                                  case 0:
-                                    showModalBottomSheet(
-                                      backgroundColor:
-                                          const Color.fromARGB(255, 23, 23, 24),
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(20),
+                                  itemBuilder: (_) => <PopupMenuItem<int>>[
+                                    PopupMenuItem(
+                                      value: 0,
+                                      child: SizedBox(
+                                        width: 80,
+                                        child: Text(
+                                          'Rename',
+                                          style: text18,
+                                        ),
                                       ),
-                                      context: context,
-                                      builder: (context) {
-                                        return editBottom(
-                                            context,
-                                            textController,
-                                            index,
-                                            playlistsong);
-                                      },
-                                    );
-                                    break;
-                                  case 1:
-                                    showDialog(
-                                      context: context,
-                                      builder: (context) {
-                                        return AlertDialog(
-                                          backgroundColor: backGroundColor,
-                                          content: Text(
-                                            'Do you want to delete ?',
-                                            style: TextStyle(
-                                                color: whiteClr, fontSize: 18),
+                                    ),
+                                    PopupMenuItem(
+                                      value: 1,
+                                      child: SizedBox(
+                                        width: 80,
+                                        child: Text(
+                                          'Delete',
+                                          style: text18,
+                                        ),
+                                      ),
+                                    )
+                                  ],
+                                  onSelected: (selectedindex) async {
+                                    switch (selectedindex) {
+                                      case 0:
+                                        showModalBottomSheet(
+                                          backgroundColor: const Color.fromARGB(
+                                              255, 23, 23, 24),
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(20),
                                           ),
-                                          actions: [
-                                            TextButton(
-                                              onPressed: () {
-                                                playlistbox.deleteAt(index);
-                                                Navigator.pop(context);
-                                              },
-                                              child: Text(
-                                                'Yes',
-                                                style: TextStyle(
-                                                    color: whiteClr,
-                                                    fontSize: 18),
-                                              ),
-                                            ),
-                                            TextButton(
-                                              onPressed: () {
-                                                Navigator.pop(context);
-                                              },
-                                              child: Text(
-                                                'No',
-                                                style: TextStyle(
-                                                    color: whiteClr,
-                                                    fontSize: 18),
-                                              ),
-                                            ),
-                                          ],
+                                          context: context,
+                                          builder: (context) {
+                                            return editBottom(
+                                                context,
+                                                textController,
+                                                index,
+                                                playlistsong);
+                                          },
                                         );
-                                      },
-                                    );
-                                }
-                              },
-                            ),
-                          );
+                                        break;
+                                      case 1:
+                                        showDialog(
+                                          context: context,
+                                          builder: (context) {
+                                            return AlertDialog(
+                                              backgroundColor: backGroundColor,
+                                              content: Text(
+                                                'Do you want to delete ?',
+                                                style: TextStyle(
+                                                    color: whiteClr,
+                                                    fontSize: 18),
+                                              ),
+                                              actions: [
+                                                TextButton(
+                                                  onPressed: () {
+                                                    BlocProvider.of<PlaylistBloc>(context).add(const GetList());
+                                                    playlistbox.deleteAt(index);
+                                                    Navigator.pop(context);
+                                                  },
+                                                  child: Text(
+                                                    'Yes',
+                                                    style: TextStyle(
+                                                        color: whiteClr,
+                                                        fontSize: 18),
+                                                  ),
+                                                ),
+                                                TextButton(
+                                                  onPressed: () {
+                                                    Navigator.pop(context);
+                                                  },
+                                                  child: Text(
+                                                    'No',
+                                                    style: TextStyle(
+                                                        color: whiteClr,
+                                                        fontSize: 18),
+                                                  ),
+                                                ),
+                                              ],
+                                            );
+                                          },
+                                        );
+                                    }
+                                  },
+                                ),
+                              );
+                            },
+                            itemCount: playlists.length,
+                          ),
+                        ),
+                  ElevatedButton.icon(
+                    style: ElevatedButton.styleFrom(
+                        backgroundColor: selectedItemColor,
+                        elevation: 1,
+                        shape: const StadiumBorder(),
+                        padding: const EdgeInsets.all(10)),
+                    onPressed: () {
+                      showModalBottomSheet(
+                        backgroundColor: const Color.fromARGB(255, 23, 23, 24),
+                        context: context,
+                        builder: (context) {
+                          return bottomSheet(context);
                         },
-                        itemCount: playlists.length,
-                      ),
-                    ),
-              ElevatedButton.icon(
-                style: ElevatedButton.styleFrom(
-                    backgroundColor: selectedItemColor,
-                    elevation: 1,
-                    shape: const StadiumBorder(),
-                    padding: const EdgeInsets.all(10)),
-                onPressed: () {
-                  showModalBottomSheet(
-                    backgroundColor: const Color.fromARGB(255, 23, 23, 24),
-                    context: context,
-                    builder: (context) {
-                      return bottomSheet(context);
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                      );
                     },
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
+                    icon: const Icon(Icons.add),
+                    label: Text(
+                      'Create Playlist',
+                      style: text18,
                     ),
-                  );
-                },
-                icon: const Icon(Icons.add),
-                label: Text(
-                  'Create Playlist',
-                  style: text18,
-                ),
-              ),
-            ],
-          );
-        },
+                  ),
+                ],
+              );
+            },
+        //   );
+        // },
       ),
     );
   }
@@ -233,11 +241,10 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                   filled: true,
                 ),
                 validator: (value) {
-            
                   // bool isAlreadyAdded = values
                   //     .where((element) => element.playlistname == value!.trim())
                   //     .isNotEmpty;
-            
+
                   if (value!.trim() == '') {
                     return 'Name Required';
                   }
@@ -268,14 +275,15 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
                 ),
                 ElevatedButton(
                   onPressed: () {
-                    if(formkey.currentState!.validate()){
+                    BlocProvider.of<PlaylistBloc>(context).add(const GetList());
+                    if (formkey.currentState!.validate()) {
                       playlistbox.putAt(
                         index,
                         PlaylistSongs(
                             playlistname: textcontroller.text,
                             playlistsongs: playlistsong),
-                            );
-                            Navigator.pop(context);
+                      );
+                      Navigator.pop(context);
                     }
                     textcontroller.clear();
                   },
@@ -353,11 +361,11 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
               ),
               validator: (value) {
                 List<PlaylistSongs> values = playlistbox.values.toList();
-          
+
                 bool isAlreadyAdded = values
                     .where((element) => element.playlistname == value!.trim())
                     .isNotEmpty;
-          
+
                 if (value!.trim() == '') {
                   return 'Name Required';
                 }
@@ -380,6 +388,7 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
       children: [
         ElevatedButton(
           onPressed: () {
+
             Navigator.of(context1).pop();
           },
           style: ElevatedButton.styleFrom(
@@ -394,12 +403,13 @@ class _PlaylistScreenState extends State<PlaylistScreen> {
         ),
         ElevatedButton(
           onPressed: () {
-            if(formkey.currentState!.validate()){
+            BlocProvider.of<PlaylistBloc>(context1).add(const GetList());
+            if (formkey.currentState!.validate()) {
               playlistbox.add(PlaylistSongs(
-                playlistname: textcontroller.text, playlistsongs: []));
-            Navigator.pop(context);
-            } 
-           textcontroller.clear();
+                  playlistname: textcontroller.text, playlistsongs: []));
+              Navigator.pop(context1);
+            }
+            textcontroller.clear();
           },
           style: ElevatedButton.styleFrom(
             shape: const StadiumBorder(),

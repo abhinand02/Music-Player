@@ -2,6 +2,10 @@ import 'dart:async';
 import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import '../Model/db_functions.dart';
+import '../Model/model.dart';
+import '../Model/mostplayed_model.dart';
+import '../Model/recentsong_model.dart';
 import '../constants/style.dart';
 
 AssetsAudioPlayer audioplayer = AssetsAudioPlayer();
@@ -73,3 +77,65 @@ class ThemeProvider extends ChangeNotifier {
     notifyListeners();
   }
 }
+
+List<Audio> resongs = [];
+
+convertToAudio(){
+List<RecentPlayed> rdbsongs = recentlyplayedbox.values.toList().reversed.toList();
+resongs.clear();
+        for (var item in rdbsongs) {
+      resongs.add(
+        Audio.file(
+          item.songurl!,
+          metas: Metas(
+            title: item.songname,
+            artist: item.artist,
+            id: item.id.toString(),
+          ),
+        ),
+      );
+      print(resongs.length);
+    }
+}
+
+ List<Audio> allSong = [];
+  void initState() {
+    List<Songs> dbSongs = SongBox.getInstance().values.toList();
+
+    for (var item in dbSongs) {
+      allSong.add(
+        Audio.file(
+          item.songurl,
+          metas: Metas(
+            artist: item.artist,
+            title: item.songname,
+            id: item.id.toString(),
+          ),
+        ),
+      );
+    }
+  }
+
+    List<MostPlayed> songlist = mostplayedsongs.values.toList();
+      List<MostPlayed> finalmpsongs = [];
+       List<Audio> songs = [];
+  mostlyPlayedFunction(){
+    finalmpsongs.clear();
+        int i = 0;
+     for (var item in songlist) {
+      if (item.count > 5) {
+        finalmpsongs.insert(i, item);
+
+        i = i + 1;
+      }
+    }
+    songs.clear();
+    // mostplayedsongs.clear();
+    for (var items in finalmpsongs) {
+      songs.add(Audio.file(items.songurl,
+          metas: Metas(
+              title: items.songname,
+              artist: items.artist,
+              id: items.id.toString())));
+    }
+  }

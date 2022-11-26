@@ -14,8 +14,8 @@ import '../constants/style.dart';
 import '../Splash Screen/splashscreen.dart';
 
 List<Songs>? songs = [];
-class SongsByPlaylistScreen extends StatefulWidget {
-  SongsByPlaylistScreen(
+class SongsByPlaylistScreen extends StatelessWidget {
+   SongsByPlaylistScreen(
       {super.key,
       required this.playlistname,
       required this.playlistindex,
@@ -25,19 +25,12 @@ class SongsByPlaylistScreen extends StatefulWidget {
   int playlistindex;
   List<Songs> allPlaylistSongs = [];
 
-  @override
-  State<SongsByPlaylistScreen> createState() => _SongsByPlaylistScreenState();
-}
-
-class _SongsByPlaylistScreenState extends State<SongsByPlaylistScreen> {
   AssetsAudioPlayer player = AssetsAudioPlayer.withId('0');
 
   List<Audio> plstsongs = [];
 
-  @override
   void initState() {
-    super.initState();
-    for (var song in widget.allPlaylistSongs) {
+    for (var song in allPlaylistSongs) {
       plstsongs.add(Audio.file(song.songurl,
           metas: Metas(
               title: song.songname,
@@ -50,7 +43,7 @@ class _SongsByPlaylistScreenState extends State<SongsByPlaylistScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: appBar(
-            widget.playlistname,
+            playlistname,
             IconButton(
               onPressed: () {
                 Navigator.pop(context);
@@ -67,7 +60,7 @@ class _SongsByPlaylistScreenState extends State<SongsByPlaylistScreen> {
                   ),
                   context: context,
                   builder: (context) {
-                    return  AddToPlaylist(playlistIndex: widget.playlistindex,);
+                    return  AddToPlaylist(playlistIndex: playlistindex,);
                   },
                 );
               },
@@ -78,7 +71,7 @@ class _SongsByPlaylistScreenState extends State<SongsByPlaylistScreen> {
           valueListenable: playlistbox.listenable(),
           builder: (context, value, _) {
             List<PlaylistSongs> plsongs = playlistbox.values.toList();
-            songs = plsongs[widget.playlistindex].playlistsongs;
+            songs = plsongs[playlistindex].playlistsongs;
 
             if (songs!.isEmpty) {
               return Center(
@@ -97,12 +90,12 @@ class _SongsByPlaylistScreenState extends State<SongsByPlaylistScreen> {
                       Playlist(audios: plstsongs, startIndex: index),
                       showNotification: notificationSwitch,
                     );
-                    setState(() {
+                    // setState(() {
                       playerVisibility= true;
                       isPlaying=true;
-                    });
+                    // });
                     Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => const NowPlayingScreen()));
+                        builder: (context) => NowPlayingScreen()));
                   },
                   leading: QueryArtworkWidget(
               id: songs![index].id,
@@ -134,16 +127,16 @@ class _SongsByPlaylistScreenState extends State<SongsByPlaylistScreen> {
                     padding: const EdgeInsets.only(bottom: 20, right: 10),
                     child: IconButton(
                         onPressed: () {
-                          setState(
-                            () {
+                          // setState(
+                          //   () {
                               songs!.removeAt(index);
                               playlistbox.putAt(
-                                  widget.playlistindex,
+                                  playlistindex,
                                   PlaylistSongs(
-                                      playlistname: widget.playlistname,
+                                      playlistname: playlistname,
                                       playlistsongs: songs),);
-                            },
-                          );
+                          //   },
+                          // );
                       //     ScaffoldMessenger.of(context).showSnackBar(
                       // SnackBar(
                       //   backgroundColor: selectedItemColor,

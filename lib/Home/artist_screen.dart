@@ -1,31 +1,21 @@
+import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:flutter/material.dart';
 import 'package:music_player/Home/songs_by_artists.dart';
 import 'package:music_player/main.dart';
 import 'package:on_audio_query/on_audio_query.dart';
-import '../Model/model.dart';
 import '../constants/style.dart';
 import 'home_screen.dart';
 
 
-class Artist extends StatefulWidget {
-  const Artist({
+List<String> artistname =[];
+
+class Artist extends StatelessWidget {
+   Artist({
     Key? key,
     required this.width,
   }) : super(key: key);
 
   final double width;
-
-  @override
-  State<Artist> createState() => _ArtistState();
-}
-
-List<ArtistModel> artistList = [];
-List<SongModel> tempsongs = [];
-List<List<Songs>> finalList = [];
-List<String> artistname =[];
-List<Songs> song = [];
-  OnAudioQuery fetchartist = OnAudioQuery();
-class _ArtistState extends State<Artist> {
   late int newIndex;
   int count = 0;
   int count1 = 1;
@@ -47,11 +37,14 @@ class _ArtistState extends State<Artist> {
               children: [
                 GestureDetector(
                   onTap: () {
+                    check(artistname[index]);
                     // print(artistList[index].numberOfTracks);                    
                     Navigator.of(context).push(
                       MaterialPageRoute(
                         builder: (context) {
                           return SongsByArtistScreen(
+                            songsByArtists: songsByArtists,
+                            artistsongs: artistsongs,
                               artistName: artistname[index]);
                         },
                       ),
@@ -86,6 +79,10 @@ class _ArtistState extends State<Artist> {
   }
 }
 void getArtist() async {
+OnAudioQuery fetchartist = OnAudioQuery();
+List<ArtistModel> artistList = [];
+List<SongModel> tempsongs = [];
+
     artistList = await fetchartist.queryArtists();
      for(int i=0;i<artistList.length;i++){
       bool status= false;
@@ -106,3 +103,32 @@ void getArtist() async {
      }
    
    }
+
+  List<Audio> songsByArtists = [];
+  List<SongModel> artistsongs = [];
+  check(String artistName) async {
+
+    final OnAudioQuery fetchArtistSongs = OnAudioQuery();
+   artistsongs.clear();
+   songsByArtists.clear();
+    final item = await fetchArtistSongs.queryAudiosFrom(
+        AudiosFromType.ARTIST, artistName,
+        sortType: SongSortType.TITLE, orderType: OrderType.ASC_OR_SMALLER);
+    for (int i = 0; i < item.length; i++) {
+      if (item[i].fileExtension == 'mp3') {
+        artistsongs.add(item[i]);
+      }
+    }
+    for (var songs in artistsongs) {
+      songsByArtists.add(
+        Audio.file(
+          songs.uri.toString(),
+          metas: Metas(
+            title: songs.title,
+            artist: songs.artist,
+            id: songs.id.toString(),
+          ),
+        ),
+      );
+    }
+  }

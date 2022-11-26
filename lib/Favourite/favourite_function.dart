@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:music_player/Application/HomeScreen/home_screen_bloc.dart';
 import '../Model/db_functions.dart';
 import '../Model/favmodel.dart';
 import '../Model/model.dart';
@@ -50,7 +52,8 @@ class _FavIconsState extends State<FavIcons> {
                       ),
                     );
 
-                    setState(() {});
+                    // setState(() {});
+                    BlocProvider.of<HomeScreenBloc>(context).add(Initial());
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                         backgroundColor: selectedItemColor,
@@ -79,7 +82,7 @@ class _FavIconsState extends State<FavIcons> {
                         element.songname == dbSongs[widget.index].songname);
                     await favdbsongs.deleteAt(currentIndex);
                     // print(currentIndex);
-                    setState(() {});
+                    // setState(() {});
 
                     // ignore: use_build_context_synchronously
                     ScaffoldMessenger.of(context).showSnackBar(

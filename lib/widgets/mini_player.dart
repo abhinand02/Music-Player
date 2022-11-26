@@ -9,20 +9,19 @@ import 'package:showcaseview/showcaseview.dart';
 
 bool isPlaying = false;
 
-class MiniPlayer extends StatefulWidget {
-  const MiniPlayer({super.key});
+class MiniPlayer extends StatelessWidget {
+   MiniPlayer({super.key});
 
-  @override
-  State<MiniPlayer> createState() => _MiniPlayerState();
-}
-
-class _MiniPlayerState extends State<MiniPlayer> {
   AssetsAudioPlayer player = AssetsAudioPlayer.withId('0');
   GlobalKey _one = GlobalKey();
   late BuildContext myContext;
-  @override
+
   void initState() {
-    super.initState();
+    
+  }
+
+  @override
+  Widget build(BuildContext context) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _isFirstLaunch().then((result) {
         if (result) {
@@ -30,10 +29,6 @@ class _MiniPlayerState extends State<MiniPlayer> {
         }
       });
     });
-  }
-
-  @override
-  Widget build(BuildContext context) {
     return ShowCaseWidget(
       builder: Builder(
         builder: (context) {

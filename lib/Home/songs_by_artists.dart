@@ -7,43 +7,30 @@ import '../Splash Screen/splashscreen.dart';
 import '../widgets/mini_player.dart';
 import 'home_screen.dart';
 
-class SongsByArtistScreen extends StatefulWidget {
+class SongsByArtistScreen extends StatelessWidget {
   final String artistName;
-  // final int artistId;
-  const SongsByArtistScreen({
+  final List<Audio> songsByArtists;
+  final List<SongModel> artistsongs;
+  SongsByArtistScreen({
     super.key,
     required this.artistName,
+    required this.songsByArtists,
+    required this.artistsongs,
   });
 
-  @override
-  State<SongsByArtistScreen> createState() => _SongsByArtistScreenState();
-}
-
-class _SongsByArtistScreenState extends State<SongsByArtistScreen> {
   final OnAudioQuery fetchArtistSongs = OnAudioQuery();
   final AssetsAudioPlayer _audioPlayer = AssetsAudioPlayer.withId('0');
   int itemId = 0;
-  List<Audio> songsByArtists = [];
-  List<SongModel> artistsongs = [];
-  List<SongModel> asongs = [];
-
-  @override
-  void initState() {
-    check();
-    super.initState();
-  }
+ 
 
   @override
   Widget build(BuildContext context) {
-    setState(() {
-      
-    });
     return Scaffold(
       appBar: PreferredSize(
           preferredSize: const Size.fromHeight(50),
           child: AppBar(
             title: Text(
-              widget.artistName,
+              artistName,
               style: textWhite22,
             ),
             shape: const RoundedRectangleBorder(
@@ -53,7 +40,7 @@ class _SongsByArtistScreenState extends State<SongsByArtistScreen> {
       body: 
       FutureBuilder<List<SongModel>>(
         future: fetchArtistSongs.queryAudiosFrom(
-            AudiosFromType.ARTIST, widget.artistName,
+            AudiosFromType.ARTIST, artistName,
             sortType: SongSortType.TITLE, orderType: OrderType.ASC_OR_SMALLER),
             builder: (context, item) {
           if(songsByArtists.isEmpty){
@@ -73,14 +60,14 @@ class _SongsByArtistScreenState extends State<SongsByArtistScreen> {
                       showNotification: notificationSwitch,
                       loopMode: LoopMode.playlist,
                     );
-                    setState(() {
+                    // setState(() {
                       playerVisibility = true;
                       isPlaying = true;
-                    });
+                    // });
                     Navigator.of(context).push(
                       MaterialPageRoute(
                         builder: (context) {
-                          return const NowPlayingScreen();
+                          return NowPlayingScreen();
                         },
                       ),
                     );
@@ -119,28 +106,5 @@ class _SongsByArtistScreenState extends State<SongsByArtistScreen> {
         },
       ),
     );
-  }
-
-  check() async {
-    final item = await fetchArtistSongs.queryAudiosFrom(
-        AudiosFromType.ARTIST, widget.artistName,
-        sortType: SongSortType.TITLE, orderType: OrderType.ASC_OR_SMALLER);
-    for (int i = 0; i < item.length; i++) {
-      if (item[i].fileExtension == 'mp3') {
-        artistsongs.add(item[i]);
-      }
-    }
-    for (var songs in artistsongs) {
-      songsByArtists.add(
-        Audio.file(
-          songs.uri.toString(),
-          metas: Metas(
-            title: songs.title,
-            artist: songs.artist,
-            id: songs.id.toString(),
-          ),
-        ),
-      );
-    }
   }
 }

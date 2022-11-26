@@ -5,15 +5,10 @@ import 'package:on_audio_query/on_audio_query.dart';
 import '../Model/db_functions.dart';
 import '../Model/playlistmodel.dart';
 
-class AddToPlaylist extends StatefulWidget {
+class AddToPlaylist extends StatelessWidget {
   int playlistIndex;
   AddToPlaylist({super.key, required this.playlistIndex});
 
-  @override
-  State<AddToPlaylist> createState() => _AddToPlaylistState();
-}
-
-class _AddToPlaylistState extends State<AddToPlaylist> {
   List<Songs> song = SongBox.getInstance().values.toList();
   List<PlaylistSongs> psongs = playlistbox.values.toList();
   @override
@@ -30,7 +25,7 @@ class _AddToPlaylistState extends State<AddToPlaylist> {
         itemBuilder: (context, index) {
           return ListTile(
             onTap: () {
-              PlaylistSongs? plsongs = playlistbox.getAt(widget.playlistIndex);
+              PlaylistSongs? plsongs = playlistbox.getAt(playlistIndex);
               List<Songs>? plnewsongs = plsongs!.playlistsongs;
               bool isAlreadyAdded = plnewsongs!.any((element) => element.id == song[index].id);
               
@@ -46,9 +41,9 @@ class _AddToPlaylistState extends State<AddToPlaylist> {
                 );
                  
                 playlistbox.putAt(
-                    widget.playlistIndex,
+                    playlistIndex,
                     PlaylistSongs(
-                        playlistname: psongs[widget.playlistIndex].playlistname,
+                        playlistname: psongs[playlistIndex].playlistname,
                         playlistsongs: plnewsongs),);
         
                 ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -60,7 +55,7 @@ class _AddToPlaylistState extends State<AddToPlaylist> {
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10)),
                     content: Text(
-                        '${song[index].songname}Added to ${psongs[widget.playlistIndex].playlistname}'),),);
+                        '${song[index].songname}Added to ${psongs[playlistIndex].playlistname}'),),);
               } else {
                 ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                     backgroundColor: selectedItemColor,

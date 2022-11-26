@@ -1,5 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:music_player/Application/BottomNavBar/bottom_nav_bar_bloc.dart';
+import 'package:music_player/Application/FavScreen/fav_screen_bloc.dart';
+import 'package:music_player/Application/HomeScreen/home_screen_bloc.dart';
+import 'package:music_player/Application/NowPlaying/now_playing_bloc.dart';
+import 'package:music_player/Application/RecentScreen/recent_screen_bloc.dart';
+import 'package:music_player/Application/Playlist/playlist_bloc.dart';
 import 'package:music_player/Model/db_functions.dart';
 import 'package:music_player/Model/favmodel.dart';
 import 'package:music_player/Model/model.dart';
@@ -31,9 +38,9 @@ Future<void> main() async {
   Hive.registerAdapter(RecentPlayedAdapter());
   openrecentlyplayedDb();
 
-  runApp(MultiProvider(
-      providers: [ChangeNotifierProvider(create: (_) => ThemeProvider())],
-      child: const MyApp()));
+  runApp(MultiProvider(providers: [
+    ChangeNotifierProvider(create: (_) => ThemeProvider()),
+  ], child: const MyApp()));
 }
 
 bool isDarkMode = true;
@@ -58,45 +65,55 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: isDarkMode
-          ? Provider.of<ThemeProvider>(context).currentTheme ??
-              ThemeData(
-                fontFamily: 'Urbanist',
-                appBarTheme: AppBarTheme(
-                    titleTextStyle: TextStyle(color: whiteClr),
-                    iconTheme: IconThemeData(color: whiteClr),
-                    backgroundColor: backGroundColor,
-                    toolbarTextStyle: TextStyle(color: whiteClr)),
-                textTheme:
-                    Theme.of(context).textTheme.apply(bodyColor: whiteClr),
-                sliderTheme: const SliderThemeData(trackHeight: 2),
-                listTileTheme: ListTileThemeData(
-                  iconColor: whiteClr,
-                ),
-                scaffoldBackgroundColor: backGroundColor,
-                iconTheme: IconThemeData(color: whiteClr),
-              )
-          : ThemeData(
-              scaffoldBackgroundColor: whiteClr,
-              iconTheme: IconThemeData(color: blackClr),
-              listTileTheme: ListTileThemeData(
-                iconColor: blackClr,
-              ),
-              appBarTheme: AppBarTheme(
-                backgroundColor: whiteClr,
-                iconTheme: IconThemeData(color: blackClr),
-                titleTextStyle: TextStyle(color: blackClr),
-                toolbarTextStyle: TextStyle(color: blackClr),
-              ),
-              textTheme: Theme.of(context).textTheme.apply(
-                    bodyColor: blackClr,
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (context) => HomeScreenBloc()),
+        BlocProvider(create: (context) => FavScreenBloc()),
+        BlocProvider(create: (context) => RecentScreenBloc()),
+        BlocProvider(create: (context) => PlaylistBloc()),
+        BlocProvider(create: (context) => NowPlayingBloc()),
+        BlocProvider(create: (context) => BottomNavBarBloc()),
+      ],
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        theme: isDarkMode
+            ? Provider.of<ThemeProvider>(context).currentTheme ??
+                ThemeData(
+                  fontFamily: 'Urbanist',
+                  appBarTheme: AppBarTheme(
+                      titleTextStyle: TextStyle(color: whiteClr),
+                      iconTheme: IconThemeData(color: whiteClr),
+                      backgroundColor: backGroundColor,
+                      toolbarTextStyle: TextStyle(color: whiteClr)),
+                  textTheme:
+                      Theme.of(context).textTheme.apply(bodyColor: whiteClr),
+                  sliderTheme: const SliderThemeData(trackHeight: 2),
+                  listTileTheme: ListTileThemeData(
+                    iconColor: whiteClr,
                   ),
-              sliderTheme: const SliderThemeData(trackHeight: 2),
-              fontFamily: 'Urbanist',
-            ),
-      home: const SplashScreen(),
+                  scaffoldBackgroundColor: backGroundColor,
+                  iconTheme: IconThemeData(color: whiteClr),
+                )
+            : ThemeData(
+                scaffoldBackgroundColor: whiteClr,
+                iconTheme: IconThemeData(color: blackClr),
+                listTileTheme: ListTileThemeData(
+                  iconColor: blackClr,
+                ),
+                appBarTheme: AppBarTheme(
+                  backgroundColor: whiteClr,
+                  iconTheme: IconThemeData(color: blackClr),
+                  titleTextStyle: TextStyle(color: blackClr),
+                  toolbarTextStyle: TextStyle(color: blackClr),
+                ),
+                textTheme: Theme.of(context).textTheme.apply(
+                      bodyColor: blackClr,
+                    ),
+                sliderTheme: const SliderThemeData(trackHeight: 2),
+                fontFamily: 'Urbanist',
+              ),
+        home: SplashScreen(),
+      ),
     );
   }
 }
